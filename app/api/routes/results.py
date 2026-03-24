@@ -9,7 +9,7 @@ from app.db.connection import get_db
 router = APIRouter(prefix="/results", tags=["Results"])
 
 
-@router.get("/results", response_model=List[ResultResponse])
+@router.get("/", response_model=List[ResultResponse])
 def fetch_results(db=Depends(get_db)):
     filters = {}  # add query params if needed
     repo = ResultsRepository(db)

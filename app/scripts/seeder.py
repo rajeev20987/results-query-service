@@ -1,25 +1,54 @@
+import random
 from app.db.connection import SessionLocal, engine
 from app.db.models import Base, TestResult
 
 # Create tables if not exists
 Base.metadata.create_all(bind=engine)
 
-# Sample dummy records
-dummy_results = [
-    {"name": "Login test - valid credentials", "status": "passed", "suite": "login-tests"},
-    {"name": "Login test - invalid password", "status": "failed", "suite": "login-tests"},
-    {"name": "Checkout test - add to cart", "status": "passed", "suite": "checkout-tests"},
-    {"name": "Checkout test - payment declined", "status": "failed", "suite": "checkout-tests"},
-    {"name": "Profile update test", "status": "passed", "suite": "profile-tests"},
-]
+
+# ✅ Generate 1000 dummy results
+def generate_dummy_results(n=1000):
+    actions = ["Login", "Checkout", "Payment", "Profile", "Search", "Signup"]
+    scenarios = [
+        "valid credentials",
+        "invalid password",
+        "add to cart",
+        "payment declined",
+        "update info",
+        "empty input",
+        "timeout",
+        "edge case",
+        "large data",
+        "special characters"
+    ]
+    suites = ["login-tests", "checkout-tests", "profile-tests", "search-tests"]
+
+    results = []
+
+    for i in range(1, n + 1):
+        status = "passed" if i <= int(n * 0.93) else "failed"
+
+        results.append({
+            "name": f"{random.choice(actions)} test - {random.choice(scenarios)}",
+            "status": status,
+            "suite": random.choice(suites),
+            "confidence": round(random.uniform(0.7, 0.99), 2),
+            "avg_execution_time": round(random.uniform(0.5, 3.0), 2),
+        })
+
+    random.shuffle(results)  # mix passed/failed
+    return results
+
+
+dummy_results = generate_dummy_results()
+
 
 # Open DB session
 db = SessionLocal()
 
 try:
-    for r in dummy_results:
-        db.add(TestResult(**r))
+    db.bulk_insert_mappings(TestResult, dummy_results)  # ✅ faster than loop
     db.commit()
-    print("Dummy data inserted successfully!")
+    print(f"{len(dummy_results)} dummy records inserted successfully!")
 finally:
     db.close()

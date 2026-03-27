@@ -32,6 +32,7 @@ class ResultsRepository:
                 "name": r.name,
                 "status": r.status,
                 "suite": r.suite,
+                "trace": r.trace,
             }
             for r in results
         ]

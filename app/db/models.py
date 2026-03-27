@@ -11,3 +11,4 @@ class TestResult(Base):
     name = Column(String, nullable=False)
     status = Column(String, nullable=False)
     suite = Column(String, nullable=False)
+    trace = Column(String, nullable=True)

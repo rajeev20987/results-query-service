@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class ResultResponse(BaseModel):
@@ -6,6 +7,7 @@ class ResultResponse(BaseModel):
     name: str
     status: str
     suite: str
+    trace: Optional[str] = None
 
     class Config:
         from_attributes = True  # for ORM compatibility

@@ -1,17 +1,13 @@
-version: "3.9"
-
 services:
-  app:
+  result-query-service:
     build: .
-    container_name: request-query-service
+    container_name: result-query-service
     ports:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql+psycopg2://postgres:password@db:5432/testdb
     depends_on:
       - db
-    volumes:
-      - .:/app
 
   db:
     image: postgres:15

@@ -1,21 +1,23 @@
-# Dockerfile
 FROM python:3.11-slim
 
-# Set workdir
-WORKDIR /app
+# Create app user
+RUN useradd -ms /bin/bash appuser
 
-# Copy requirements first for caching
+WORKDIR /results
+
 COPY requirements.txt .
 
-# Install dependencies
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
-# Copy the application code
 COPY . .
 
-# Expose FastAPI port
+# Change ownership of app files
+RUN chown -R appuser:appuser /results
+
+USER appuser
+
 EXPOSE 8000
 
 # Run FastAPI app
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+ENTRYPOINT ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

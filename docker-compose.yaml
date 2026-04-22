@@ -1,6 +1,6 @@
 services:
   result-query-service:
-    build: .
+    build: result-query-service/.
     container_name: result-query-service
     ports:
       - "8000:8000"

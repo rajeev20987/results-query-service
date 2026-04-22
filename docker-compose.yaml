@@ -1,4 +1,12 @@
 services:
+  model-runner:
+    build: ./model-runner
+    container_name: model-runner
+    ports:
+      - "11434:11434"
+    networks:
+      - mcp_try
+
   result-query-service:
     build: result-query-service/.
     container_name: result-query-service
@@ -8,6 +16,8 @@ services:
       - DATABASE_URL=postgresql+psycopg2://postgres:password@db:5432/testdb
     depends_on:
       - db
+    networks:  
+      - mcp_try
 
   db:
     image: postgres:15
@@ -20,6 +30,10 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+networks:
+  mcp_try:
+    driver: bridge 
 
 volumes:
   pgdata:

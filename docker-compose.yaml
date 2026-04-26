@@ -1,9 +1,29 @@
 services:
+  tool-api-mapper:
+    build: ./tool-api-mapper
+    container_name: tool-api-mapper
+    ports:
+      - "5000:5000"
+    depends_on:
+      - model-runner
+      - mcp-tool
+    networks:
+      - mcp_try
   model-runner:
     build: ./model-runner
     container_name: model-runner
     ports:
       - "11434:11434"
+    networks:
+      - mcp_try
+
+  mcp-tool:
+    build: ./mcp-tool
+    container_name: mcp-tool
+    depends_on:
+      - result-query-service
+    ports:
+      - "8080:8080"
     networks:
       - mcp_try
 

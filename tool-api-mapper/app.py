@@ -29,13 +29,26 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "get_results",
-            "description": "Fetch test execution results",
+            "description": "Fetch test execution results filtered by status, suite, test name, or limit.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "status": {"type": "string"},
-                    "suite": {"type": "string"},
-                    "name": {"type": "string"}
+                    "status": {
+                        "type": "string",
+                        "description": "passed or failed"
+                    },
+                    "suite": {
+                        "type": "string",
+                        "description": "suite name such as smoke or regression"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "specific test name"
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "maximum number of results"
+                    }
                 }
             }
         }
@@ -44,7 +57,27 @@ TOOLS = [
 
 @app.get("/chat")
 async def chat_endpoint(prompt: str):
-    messages = [{"role": "user", "content": prompt}]
+    messages = [
+        {
+            "role": "system",
+            "content": """
+    You are an assistant for test execution reporting.
+
+    Use the get_results tool whenever the user asks about:
+    - failed tests
+    - passed tests
+    - smoke or regression suites
+    - specific test names
+    - latest test results
+
+    Only ask follow-up questions if required information is missing.
+    """
+        },
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ]
     ollama_client = Client(host=os.getenv("OLLAMA_HOST"))
     while True:
         response = ollama_client.chat(
@@ -70,6 +103,6 @@ async def chat_endpoint(prompt: str):
 
                 messages.append({
                     "role": "tool",
-                    "tool_name": fn,
-                    "content": tool_result
+                    "name": fn,
+                    "content": str(tool_result)
                 })
